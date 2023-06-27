@@ -1,5 +1,6 @@
-# New Gradient App Bar
-
+# Gradient App Bar
+> This is a fork of new_gradient_app_bar, but with Flutter 3.10/Dart 3 support
+ 
 Love the material AppBar? Do you want to add more color to the appbar? Here's a newGradientAppBar.
 
 It works just like the normal AppBar. Also with actions, back buttons, titles. So it's just your normal AppBar, but with a twist!
@@ -12,11 +13,17 @@ It works just like the normal AppBar. Also with actions, back buttons, titles. S
 
 ## Getting Started
 
-1. Depend on it by adding this to your pubspec.yaml file: ```new_gradient_app_bar: ^0.1.4```
+1. Depend on it by adding this to your pubspec.yaml file:
+   ```
+   new_gradient_app_bar:
+    git:
+      url: https://github.com/shawn-grant/FlutterGradientAppBar.git
+      ref: master
+   ```
 
-2. Import it: ```import 'package:new_gradient_app_bar/new_gradient_app_bar.dart'```
+4. Import it: ```import 'package:new_gradient_app_bar/new_gradient_app_bar.dart'```
 
-3. Replace your current AppBar (In the scaffold) to NewGradientAppBar. 
+5. Replace your current AppBar (In the scaffold) to NewGradientAppBar. 
 
 
 ```
