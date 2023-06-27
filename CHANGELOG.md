@@ -1,3 +1,11 @@
+## [0.3.0] - June 2023
+
+ - Create separate package from fork
+ - Rename package to `flutter_gradient_app_bar`
+ - Rename `NewGradientAppBar` class to `GradientAppBar`
+ - Add support for **Flutter 3.10.0** and **Dart 3**
+ - Migrate example app to AndroidX
+
 ## [0.2.0] - April 2021
 
  - Update Dart 2.12.0 [#1](https://github.com/GUIKAR741/NewGradientAppBar/pull/1)
