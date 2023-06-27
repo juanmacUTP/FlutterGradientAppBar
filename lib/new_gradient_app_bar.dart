@@ -8,8 +8,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
-const double _kLeadingWidth =
-    kToolbarHeight; // So the leading button is square.
+const double _kLeadingWidth = kToolbarHeight;
 
 // Bottom justify the kToolbarHeight child which may overflow the top.
 class _ToolbarContainerLayout extends SingleChildLayoutDelegate {
@@ -418,12 +417,12 @@ class _NewGradientAppBarState extends State<NewGradientAppBar> {
     IconThemeData actionsIconTheme = widget.actionsIconTheme ??
         appBarTheme.actionsIconTheme ??
         overallIconTheme;
-    TextStyle centerStyle = (widget.textTheme?.headline6 ??
-        appBarTheme.textTheme?.headline6 ??
-        themeData.primaryTextTheme.headline6)!;
-    TextStyle? sideStyle = widget.textTheme?.bodyText2 ??
-        appBarTheme.textTheme?.bodyText2 ??
-        themeData.primaryTextTheme.bodyText2;
+    TextStyle centerStyle = widget.textTheme?.titleLarge ??
+        appBarTheme.titleTextStyle ??
+        themeData.primaryTextTheme.titleLarge)!;
+    TextStyle? sideStyle = widget.textTheme?.bodyMedium ??
+        appBarTheme.toolbarTextStyle ??
+        themeData.primaryTextTheme.bodyMedium;
 
     if (widget.toolbarOpacity != 1.0) {
       final double opacity =
@@ -577,8 +576,8 @@ class _NewGradientAppBarState extends State<NewGradientAppBar> {
       );
     }
     final Brightness brightness = widget.brightness ??
-        appBarTheme.brightness ??
-        themeData.primaryColorBrightness;
+        appBarTheme.systemOverlayStyle?.statusBarBrightness ??
+        themeData.brightness;
     final SystemUiOverlayStyle overlayStyle = brightness == Brightness.dark
         ? SystemUiOverlayStyle.light
         : SystemUiOverlayStyle.dark;
@@ -588,7 +587,7 @@ class _NewGradientAppBarState extends State<NewGradientAppBar> {
       child: AnnotatedRegion<SystemUiOverlayStyle>(
         value: overlayStyle,
         child: Material(
-            color: appBarTheme.color ?? themeData.primaryColor,
+            color: appBarTheme.backgroundColor ?? themeData.primaryColor,
             elevation:
                 widget.elevation ?? appBarTheme.elevation ?? _defaultElevation,
             shape: widget.shape,
@@ -623,7 +622,7 @@ class _FloatingGradientAppBarState extends State<_FloatingGradientAppBar> {
     super.didChangeDependencies();
     if (_position != null)
       _position!.isScrollingNotifier.removeListener(_isScrollingListener);
-    _position = Scrollable.of(context)?.position;
+    _position = Scrollable.of(context).position;
     if (_position != null)
       _position!.isScrollingNotifier.addListener(_isScrollingListener);
   }
