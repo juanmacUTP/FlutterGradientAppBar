@@ -1,6 +1,6 @@
 name: flutter_gradient_app_bar
 description: The official AppBar, with a more colorful twist. Add gradients to spice up your application and make it beautiful.
-version: 0.3.0
+version: 0.3.1
 homepage: https://github.com/shawn-grant/FlutterGradientAppBar
 
 dependencies:
