@@ -395,7 +395,7 @@ class _GradientAppBarState extends State<GradientAppBar> {
     assert(!widget.primary || debugCheckHasMediaQuery(context));
     assert(debugCheckHasMaterialLocalizations(context));
     final ThemeData themeData = Theme.of(context);
-    final AppBarTheme appBarTheme = AppBarTheme.of(context);
+    final AppBarThemeData appBarTheme = AppBarTheme.of(context);
     final ScaffoldState scaffold = Scaffold.of(context);
     final ModalRoute<dynamic>? parentRoute = ModalRoute.of(context);
 
@@ -423,10 +423,10 @@ class _GradientAppBarState extends State<GradientAppBar> {
               .transform(widget.toolbarOpacity);
       if (centerStyle.color != null)
         centerStyle = centerStyle.copyWith(
-            color: centerStyle.color!.withOpacity(opacity));
+            color: centerStyle.color!.withAlpha((opacity * 100).ceil()));
       if (sideStyle?.color != null)
         sideStyle =
-            sideStyle!.copyWith(color: sideStyle.color!.withOpacity(opacity));
+            sideStyle!.copyWith(color: sideStyle.color!.withAlpha((opacity * 100).ceil()));
       overallIconTheme = overallIconTheme.copyWith(
           opacity: opacity * (overallIconTheme.opacity ?? 1.0));
       actionsIconTheme = actionsIconTheme.copyWith(
@@ -546,7 +546,7 @@ class _GradientAppBarState extends State<GradientAppBar> {
       );
     }
 
-    // The padding applies to the toolbar and tabbar, not the flexible space.
+    // The padding applies to the toolbar and tabBar, not the flexible space.
     if (widget.primary) {
       appBar = SafeArea(
         top: true,

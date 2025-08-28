@@ -47,8 +47,6 @@ class TestSemantics {
     this.textDirection,
     this.rect,
     this.transform,
-    this.elevation,
-    this.thickness,
     this.textSelection,
     this.children = const <TestSemantics>[],
     this.scrollIndex,
@@ -79,8 +77,6 @@ class TestSemantics {
         assert(flags is int || flags is List<SemanticsFlag>),
         assert(actions is int || actions is List<SemanticsAction>),
         rect = TestSemantics.rootRect,
-        elevation = 0.0,
-        thickness = 0.0,
         tags = tags?.toSet() ?? <SemanticsTag>{};
 
   /// Creates an object with some test semantics data, with the [id] and [rect]
@@ -104,8 +100,6 @@ class TestSemantics {
     this.textDirection,
     this.rect,
     Matrix4? transform,
-    this.elevation,
-    this.thickness,
     this.textSelection,
     this.children = const <TestSemantics>[],
     this.scrollIndex,
@@ -180,7 +174,7 @@ class TestSemantics {
   /// The test screen's size in physical pixels, typically used as the [rect]
   /// for the node with id zero.
   ///
-  /// See also [new TestSemantics.root], which uses this value to describe the
+  /// See also [TestSemantics.root], which uses this value to describe the
   /// root node.
   static const Rect rootRect = Rect.fromLTWH(0.0, 0.0, 2400.0, 1800.0);
 
@@ -194,21 +188,6 @@ class TestSemantics {
   /// transformation (i.e., that this node has the same coordinate system as its
   /// parent).
   final Matrix4? transform;
-
-  /// The elevation of this node relative to the parent node.
-  ///
-  /// See also:
-  ///
-  ///  * [SemanticsConfiguration.elevation] for a detailed discussion regarding
-  ///    elevation and semantics.
-  final double? elevation;
-
-  /// The extend that this node occupies in z-direction starting at [elevation].
-  ///
-  /// See also:
-  ///
-  ///  * [SemanticsConfiguration.thickness] for a more detailed definition.
-  final double? thickness;
 
   /// The index of the first visible semantic node within a scrollable.
   final int? scrollIndex;
@@ -254,9 +233,9 @@ class TestSemantics {
         ? flags
         : flags.fold<int>(
             0, (int bitmask, SemanticsFlag flag) => bitmask | flag.index);
-    if (flagsBitmask != nodeData.flags)
+    if (flagsBitmask != nodeData.flagsCollection)
       return fail(
-          'expected node id $id to have flags $flags but found flags ${nodeData.flags}.');
+          'expected node id $id to have flags $flags but found flags ${nodeData.flagsCollection}.');
 
     final int actionsBitmask = actions is int
         ? actions
@@ -298,14 +277,6 @@ class TestSemantics {
     if (!ignoreTransform && transform != nodeData.transform)
       return fail(
           'expected node id $id to have transform $transform but found transform:\n${nodeData.transform}.');
-    if (elevation != null && elevation != nodeData.elevation) {
-      return fail(
-          'expected node id $id to have elevation $elevation but found elevation:\n${nodeData.elevation}.');
-    }
-    if (thickness != null && thickness != nodeData.thickness) {
-      return fail(
-          'expected node id $id to have thickness $thickness but found thickness:\n${nodeData.thickness}.');
-    }
     if (textSelection?.baseOffset != nodeData.textSelection?.baseOffset ||
         textSelection?.extentOffset != nodeData.textSelection?.extentOffset) {
       return fail(
@@ -381,8 +352,6 @@ class TestSemantics {
     if (transform != null)
       buf.writeln(
           '$indent  transform:\n${transform.toString().trim().split('\n').map<String>((String line) => '$indent    $line').join('\n')},');
-    if (elevation != null) buf.writeln('$indent  elevation: $elevation,');
-    if (thickness != null) buf.writeln('$indent  thickness: $thickness,');
     buf.writeln('$indent  children: <TestSemantics>[');
     for (TestSemantics child in children) {
       buf.writeln('${child.toString(indentAmount + 2)},');
@@ -402,7 +371,8 @@ class SemanticsTester {
   /// You should call [dispose] at the end of a test that creates a semantics
   /// tester.
   SemanticsTester(this.tester) {
-    _semanticsHandle = tester.binding.pipelineOwner.ensureSemantics();
+    _semanticsHandle = SemanticsBinding.instance.ensureSemantics();
+
 
     // This _extra_ clean-up is needed for the case when a test fails and
     // therefore fails to call dispose() explicitly. The test is still required
@@ -430,7 +400,7 @@ class SemanticsTester {
 
   @override
   String toString() =>
-      'SemanticsTester for ${tester.binding.pipelineOwner.semanticsOwner?.rootSemanticsNode}';
+      'SemanticsTester for ${RendererBinding.instance.rootPipelineOwner.semanticsOwner?.rootSemanticsNode}';
 
   /// Returns all semantics nodes in the current semantics tree whose properties
   /// match the non-null arguments.
@@ -464,11 +434,27 @@ class SemanticsTester {
         if (expectedActions != actualActions) return false;
       }
       if (flags != null) {
-        final int expectedFlags = flags.fold<int>(
-            0, (int value, SemanticsFlag flag) => value | flag.index);
-        final int actualFlags = node.getSemanticsData().flags;
-        if (expectedFlags != actualFlags) return false;
+        final semantics = node.getSemanticsData().flagsCollection;
+
+        for (final flag in flags) {
+          switch (flag) {
+            case SemanticsFlag.isButton:
+              if (!semantics.isButton) return false;
+              break;
+            case SemanticsFlag.isHidden:
+              if (!semantics.isHidden) return false;
+              break;
+            case SemanticsFlag.isEnabled:
+              if (!semantics.isEnabled) return false;
+              break;
+            default:
+              break;
+          }
+        }
       }
+
+
+
       if (scrollPosition != null &&
           !nearEqual(node.scrollPosition, scrollPosition, 0.1)) return false;
       if (scrollExtentMax != null &&
@@ -490,7 +476,7 @@ class SemanticsTester {
     if (ancestor != null) {
       visit(ancestor);
     } else {
-      visit((tester.binding.pipelineOwner.semanticsOwner!.rootSemanticsNode)!);
+      visit(RendererBinding.instance.rootPipelineOwner.semanticsOwner!.rootSemanticsNode!);
     }
     return result;
   }
@@ -546,14 +532,14 @@ class SemanticsTester {
   String generateTestSemanticsExpressionForCurrentSemanticsTree(
       DebugSemanticsDumpOrder childOrder) {
     final SemanticsNode? node =
-        tester.binding.pipelineOwner.semanticsOwner?.rootSemanticsNode;
+    RendererBinding.instance.rootPipelineOwner.semanticsOwner!.rootSemanticsNode!;
     return _generateSemanticsTestForNode(node!, 0, childOrder);
   }
 
   static String _flagsToSemanticsFlagExpression(dynamic flags) {
     Iterable<SemanticsFlag> list;
     if (flags is int) {
-      list = SemanticsFlag.values.values
+      list = SemanticsFlag.values
           .where((SemanticsFlag flag) => (flag.index & flags) != 0);
     } else {
       list = flags;
@@ -568,7 +554,7 @@ class SemanticsTester {
   static String _actionsToSemanticsActionExpression(dynamic actions) {
     Iterable<SemanticsAction> list;
     if (actions is int) {
-      list = SemanticsAction.values.values
+      list = SemanticsAction.values
           .where((SemanticsAction action) => (action.index & actions) != 0);
     } else {
       list = actions;
@@ -590,9 +576,9 @@ class SemanticsTester {
     if (!isRoot) buf.writeln('  id: ${node.id},');
     if (nodeData.tags != null)
       buf.writeln('  tags: ${_tagsToSemanticsTagExpression(nodeData.tags!)},');
-    if (nodeData.flags != 0)
+    if (nodeData.flagsCollection != 0)
       buf.writeln(
-          '  flags: ${_flagsToSemanticsFlagExpression(nodeData.flags)},');
+          '  flags: ${_flagsToSemanticsFlagExpression(nodeData.flagsCollection)},');
     if (nodeData.actions != 0)
       buf.writeln(
           '  actions: ${_actionsToSemanticsActionExpression(nodeData.actions)},');
@@ -651,7 +637,7 @@ class _HasSemantics extends Matcher {
   bool matches(
       covariant SemanticsTester item, Map<dynamic, dynamic> matchState) {
     final bool doesMatch = _semantics._matches(
-      (item.tester.binding.pipelineOwner.semanticsOwner?.rootSemanticsNode)!,
+      (RendererBinding.instance.rootPipelineOwner.semanticsOwner?.rootSemanticsNode)!,
       matchState,
       ignoreTransform: ignoreTransform,
       ignoreRect: ignoreRect,
@@ -662,7 +648,7 @@ class _HasSemantics extends Matcher {
       matchState['would-match'] = item
           .generateTestSemanticsExpressionForCurrentSemanticsTree(childOrder);
     }
-    if (item.tester.binding.pipelineOwner.semanticsOwner == null) {
+    if (RendererBinding.instance.rootPipelineOwner.semanticsOwner == null) {
       matchState['additional-notes'] =
           '(Check that the SemanticsTester has not been disposed early.)';
     }
@@ -689,12 +675,17 @@ class _HasSemantics extends Matcher {
     Description result = mismatchDescription
         .add('${matchState[TestSemantics]}\n')
         .add('Current SemanticsNode tree:\n')
-        .add(_indent((RendererBinding.instance.renderView.debugSemantics
-            ?.toStringDeep(childOrder: childOrder))!))
+        .add(_indent((
+        RendererBinding.instance.rootPipelineOwner.semanticsOwner
+            ?.rootSemanticsNode
+            ?.toStringDeep(childOrder: childOrder)
+    )!))
         .add('\n')
         .add(
-            'The semantics tree would have matched the following configuration:\n')
+        'The semantics tree would have matched the following configuration:\n')
         .add(_indent(matchState['would-match']));
+
+
     if (matchState.containsKey('additional-notes')) {
       result = result.add('\n').add(matchState['additional-notes']);
     }
@@ -784,7 +775,7 @@ class _IncludesNodeWith extends Matcher {
     if (value != null) strings.add('value "$value"');
     if (hint != null) strings.add('hint "$hint"');
     if (textDirection != null)
-      strings.add(' (${describeEnum(textDirection!)})');
+      strings.add(' (${(textDirection!.name)})');
     if (actions != null) strings.add('actions "${actions!.join(', ')}"');
     if (flags != null) strings.add('flags "${flags!.join(', ')}"');
     if (scrollPosition != null) strings.add('scrollPosition "$scrollPosition"');
