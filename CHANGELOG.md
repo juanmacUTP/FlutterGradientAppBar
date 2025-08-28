@@ -1,3 +1,10 @@
+## [0.4.2] - 29 August 2025
+ - Rename package to `flutter_gradient_app_bar_plus`
+ - Readme update
+ - Add support for **Flutter 3.35**
+ - Homepage update
+ - Repo update
+
 ## [0.4.1] - 28 August 2025
 
  - Fixed AppBarTheme to AppBarThemeData
