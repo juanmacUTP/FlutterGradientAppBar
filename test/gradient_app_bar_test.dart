@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import './semantics_tester.dart';
-import '../lib/flutter_gradient_app_bar.dart';
+import '../lib/flutter_gradient_app_bar_plus.dart';
 
 Widget buildSliverGradientAppBarApp(
     {bool? floating, bool? pinned, double? expandedHeight, bool snap = false}) {
