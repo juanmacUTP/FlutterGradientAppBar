@@ -1,3 +1,8 @@
+## [0.4.1] - 28 August 2025
+
+ - Fixed AppBarTheme to AppBarThemeData
+ - Fixed some deprecated methods
+
 ## [0.3.1] - 27 June 2023
 
  - minor changes

@@ -57,7 +57,7 @@ packages:
   flutter_gradient_app_bar:
     dependency: "direct main"
     description:
-      path: ".."
+      path: "../../flGradientApb"
       relative: true
     source: path
     version: "0.3.1"
