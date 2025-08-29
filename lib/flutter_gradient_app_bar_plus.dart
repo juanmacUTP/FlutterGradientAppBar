@@ -358,7 +358,9 @@ class GradientAppBar extends StatefulWidget implements PreferredSizeWidget {
   final Size preferredSize;
 
   bool? _getEffectiveCenterTitle(ThemeData themeData) {
-    if (centerTitle != null) return centerTitle;
+    if (centerTitle != null) {
+      return centerTitle;
+    }
     assert(true);
     switch (themeData.platform) {
       case TargetPlatform.android:
@@ -444,8 +446,9 @@ class _GradientAppBarState extends State<GradientAppBar> {
           tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
         );
       } else {
-        if (canPop)
+        if (canPop) {
           leading = useCloseButton ? const CloseButton() : const BackButton();
+        }
       }
     }
     if (leading != null) {
@@ -615,17 +618,20 @@ class _FloatingGradientAppBarState extends State<_FloatingGradientAppBar> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (_position != null)
+    if (_position != null) {
       _position!.isScrollingNotifier.removeListener(_isScrollingListener);
+    }
     _position = Scrollable.of(context).position;
-    if (_position != null)
+    if (_position != null) {
       _position!.isScrollingNotifier.addListener(_isScrollingListener);
+    }
   }
 
   @override
   void dispose() {
-    if (_position != null)
+    if (_position != null) {
       _position!.isScrollingNotifier.removeListener(_isScrollingListener);
+    }
     super.dispose();
   }
 
@@ -638,10 +644,11 @@ class _FloatingGradientAppBarState extends State<_FloatingGradientAppBar> {
     // When a scroll stops, then maybe snap the appbar into view.
     // Similarly, when a scroll starts, then maybe stop the snap animation.
     final RenderSliverFloatingPersistentHeader? header = _headerRenderer();
-    if (_position!.isScrollingNotifier.value)
+    if (_position!.isScrollingNotifier.value) {
       header?.maybeStopSnapAnimation(_position!.userScrollDirection);
-    else
+    } else {
       header?.maybeStartSnapAnimation(_position!.userScrollDirection);
+    }
   }
 
   @override
@@ -1177,8 +1184,9 @@ class _SliverGradientAppBarState extends State<SliverGradientAppBar>
   @override
   void didUpdateWidget(SliverGradientAppBar oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.snap != oldWidget.snap || widget.floating != oldWidget.floating)
+    if (widget.snap != oldWidget.snap || widget.floating != oldWidget.floating) {
       _updateSnapConfiguration();
+    }
   }
 
   @override

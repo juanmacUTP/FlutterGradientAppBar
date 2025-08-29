@@ -1,6 +1,8 @@
-## [0.4.3] - 29 August 2025
+## [0.4.4] - 29 August 2025
 - Refact if statements without curly braces
 
+## [0.4.3] - 29 August 2025
+- Refact if statements without curly braces
 
 ## [0.4.2] - 29 August 2025
  - Rename package to `flutter_gradient_app_bar_plus`
