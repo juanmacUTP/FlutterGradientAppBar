@@ -421,12 +421,14 @@ class _GradientAppBarState extends State<GradientAppBar> {
       final double opacity =
           const Interval(0.25, 1.0, curve: Curves.fastOutSlowIn)
               .transform(widget.toolbarOpacity);
-      if (centerStyle.color != null)
+      if (centerStyle.color != null) {
         centerStyle = centerStyle.copyWith(
             color: centerStyle.color!.withAlpha((opacity * 100).ceil()));
-      if (sideStyle?.color != null)
+      }
+      if (sideStyle?.color != null) {
         sideStyle =
             sideStyle!.copyWith(color: sideStyle.color!.withAlpha((opacity * 100).ceil()));
+      }
       overallIconTheme = overallIconTheme.copyWith(
           opacity: opacity * (overallIconTheme.opacity ?? 1.0));
       actionsIconTheme = actionsIconTheme.copyWith(
