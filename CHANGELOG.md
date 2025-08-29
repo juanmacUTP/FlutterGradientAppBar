@@ -1,3 +1,6 @@
+## [0.4.5] - 29 August 2025
+- Refact file with Dart Format
+- 
 ## [0.4.4] - 29 August 2025
 - Refact if statements without curly braces
 

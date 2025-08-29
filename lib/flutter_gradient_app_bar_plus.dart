@@ -174,10 +174,11 @@ class GradientAppBar extends StatefulWidget implements PreferredSizeWidget {
     this.titleSpacing = NavigationToolbar.kMiddleSpacing,
     this.toolbarOpacity = 1.0,
     this.bottomOpacity = 1.0,
-  })  : assert(elevation == null || elevation >= 0.0),
-        preferredSize = Size.fromHeight(
-            kToolbarHeight + (bottom?.preferredSize.height ?? 0.0)),
-        super(key: key);
+  }) : assert(elevation == null || elevation >= 0.0),
+       preferredSize = Size.fromHeight(
+         kToolbarHeight + (bottom?.preferredSize.height ?? 0.0),
+       ),
+       super(key: key);
 
   /// A widget to display before the [title].
   ///
@@ -409,32 +410,41 @@ class _GradientAppBarState extends State<GradientAppBar> {
 
     IconThemeData overallIconTheme =
         widget.iconTheme ?? appBarTheme.iconTheme ?? themeData.primaryIconTheme;
-    IconThemeData actionsIconTheme = widget.actionsIconTheme ??
+    IconThemeData actionsIconTheme =
+        widget.actionsIconTheme ??
         appBarTheme.actionsIconTheme ??
         overallIconTheme;
-    TextStyle? centerStyle = widget.textTheme?.titleLarge ??
+    TextStyle? centerStyle =
+        widget.textTheme?.titleLarge ??
         appBarTheme.titleTextStyle ??
         themeData.primaryTextTheme.titleLarge!;
-    TextStyle? sideStyle = widget.textTheme?.bodyMedium ??
+    TextStyle? sideStyle =
+        widget.textTheme?.bodyMedium ??
         appBarTheme.toolbarTextStyle ??
         themeData.primaryTextTheme.bodyMedium;
 
     if (widget.toolbarOpacity != 1.0) {
-      final double opacity =
-          const Interval(0.25, 1.0, curve: Curves.fastOutSlowIn)
-              .transform(widget.toolbarOpacity);
+      final double opacity = const Interval(
+        0.25,
+        1.0,
+        curve: Curves.fastOutSlowIn,
+      ).transform(widget.toolbarOpacity);
       if (centerStyle.color != null) {
         centerStyle = centerStyle.copyWith(
-            color: centerStyle.color!.withAlpha((opacity * 100).ceil()));
+          color: centerStyle.color!.withAlpha((opacity * 100).ceil()),
+        );
       }
       if (sideStyle?.color != null) {
-        sideStyle =
-            sideStyle!.copyWith(color: sideStyle.color!.withAlpha((opacity * 100).ceil()));
+        sideStyle = sideStyle!.copyWith(
+          color: sideStyle.color!.withAlpha((opacity * 100).ceil()),
+        );
       }
       overallIconTheme = overallIconTheme.copyWith(
-          opacity: opacity * (overallIconTheme.opacity ?? 1.0));
+        opacity: opacity * (overallIconTheme.opacity ?? 1.0),
+      );
       actionsIconTheme = actionsIconTheme.copyWith(
-          opacity: opacity * (actionsIconTheme.opacity ?? 1.0));
+        opacity: opacity * (actionsIconTheme.opacity ?? 1.0),
+      );
     }
 
     Widget? leading = widget.leading;
@@ -476,11 +486,7 @@ class _GradientAppBarState extends State<GradientAppBar> {
         style: centerStyle,
         softWrap: false,
         overflow: TextOverflow.ellipsis,
-        child: Semantics(
-          namesRoute: namesRoute,
-          child: title,
-          header: true,
-        ),
+        child: Semantics(namesRoute: namesRoute, child: title, header: true),
       );
     }
 
@@ -501,10 +507,7 @@ class _GradientAppBarState extends State<GradientAppBar> {
 
     // Allow the trailing actions to have their own theme if necessary.
     if (actions != null) {
-      actions = IconTheme.merge(
-        data: actionsIconTheme,
-        child: actions,
-      );
+      actions = IconTheme.merge(data: actionsIconTheme, child: actions);
     }
 
     final Widget toolbar = NavigationToolbar(
@@ -522,10 +525,7 @@ class _GradientAppBarState extends State<GradientAppBar> {
         delegate: const _ToolbarContainerLayout(),
         child: IconTheme.merge(
           data: overallIconTheme,
-          child: DefaultTextStyle(
-            style: (sideStyle)!,
-            child: toolbar,
-          ),
+          child: DefaultTextStyle(style: (sideStyle)!, child: toolbar),
         ),
       ),
     );
@@ -542,9 +542,11 @@ class _GradientAppBarState extends State<GradientAppBar> {
           widget.bottomOpacity == 1.0
               ? widget.bottom!
               : Opacity(
-                  opacity:
-                      const Interval(0.25, 1.0, curve: Curves.fastOutSlowIn)
-                          .transform(widget.bottomOpacity),
+                  opacity: const Interval(
+                    0.25,
+                    1.0,
+                    curve: Curves.fastOutSlowIn,
+                  ).transform(widget.bottomOpacity),
                   child: widget.bottom!,
                 ),
         ],
@@ -553,27 +555,19 @@ class _GradientAppBarState extends State<GradientAppBar> {
 
     // The padding applies to the toolbar and tabBar, not the flexible space.
     if (widget.primary) {
-      appBar = SafeArea(
-        top: true,
-        child: appBar,
-      );
+      appBar = SafeArea(top: true, child: appBar);
     }
 
-    appBar = Align(
-      alignment: Alignment.topCenter,
-      child: appBar,
-    );
+    appBar = Align(alignment: Alignment.topCenter, child: appBar);
 
     if (widget.flexibleSpace != null) {
       appBar = Stack(
         fit: StackFit.passthrough,
-        children: <Widget>[
-          widget.flexibleSpace!,
-          appBar,
-        ],
+        children: <Widget>[widget.flexibleSpace!, appBar],
       );
     }
-    final Brightness brightness = widget.brightness ??
+    final Brightness brightness =
+        widget.brightness ??
         appBarTheme.systemOverlayStyle?.statusBarBrightness ??
         themeData.brightness;
     final SystemUiOverlayStyle overlayStyle = brightness == Brightness.dark
@@ -585,17 +579,15 @@ class _GradientAppBarState extends State<GradientAppBar> {
       child: AnnotatedRegion<SystemUiOverlayStyle>(
         value: overlayStyle,
         child: Material(
-            color: appBarTheme.backgroundColor ?? themeData.primaryColor,
-            elevation:
-                widget.elevation ?? appBarTheme.elevation ?? _defaultElevation,
-            shape: widget.shape,
-            child: Container(
-              decoration: BoxDecoration(gradient: widget.gradient),
-              child: Semantics(
-                explicitChildNodes: true,
-                child: appBar,
-              ),
-            )),
+          color: appBarTheme.backgroundColor ?? themeData.primaryColor,
+          elevation:
+              widget.elevation ?? appBarTheme.elevation ?? _defaultElevation,
+          shape: widget.shape,
+          child: Container(
+            decoration: BoxDecoration(gradient: widget.gradient),
+            child: Semantics(explicitChildNodes: true, child: appBar),
+          ),
+        ),
       ),
     );
   }
@@ -680,8 +672,8 @@ class _SliverGradientAppBarDelegate extends SliverPersistentHeaderDelegate {
     required this.pinned,
     required this.snapConfiguration,
     required this.shape,
-  })  : assert(primary || topPadding == 0.0),
-        _bottomHeight = bottom.preferredSize.height;
+  }) : assert(primary || topPadding == 0.0),
+       _bottomHeight = bottom.preferredSize.height;
 
   final Widget leading;
   final bool automaticallyImplyLeading;
@@ -719,7 +711,10 @@ class _SliverGradientAppBarDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
     final double visibleMainHeight = maxExtent - shrinkOffset - topPadding;
 
     // Truth table for `toolbarOpacity`:
@@ -752,7 +747,8 @@ class _SliverGradientAppBarDelegate extends SliverPersistentHeaderDelegate {
             ? Semantics(child: flexibleSpace, header: true)
             : flexibleSpace,
         bottom: bottom,
-        elevation: forceElevated ||
+        elevation:
+            forceElevated ||
                 overlapsContent ||
                 (pinned && shrinkOffset > maxExtent - minExtent)
             ? elevation
@@ -767,8 +763,9 @@ class _SliverGradientAppBarDelegate extends SliverPersistentHeaderDelegate {
         titleSpacing: titleSpacing,
         shape: shape,
         toolbarOpacity: toolbarOpacity,
-        bottomOpacity:
-            pinned ? 1.0 : (visibleMainHeight / _bottomHeight).clamp(0.0, 1.0),
+        bottomOpacity: pinned
+            ? 1.0
+            : (visibleMainHeight / _bottomHeight).clamp(0.0, 1.0),
       ),
     );
     return floating ? _FloatingGradientAppBar(child: appBar) : appBar;
@@ -911,9 +908,11 @@ class SliverGradientAppBar extends StatefulWidget {
     this.pinned = false,
     this.snap = false,
     this.shape,
-  })  : assert(floating || !snap,
-            'The "snap" argument only makes sense for floating app bars.'),
-        super(key: key);
+  }) : assert(
+         floating || !snap,
+         'The "snap" argument only makes sense for floating app bars.',
+       ),
+       super(key: key);
 
   /// A widget to display before the [title].
   ///
@@ -1184,7 +1183,8 @@ class _SliverGradientAppBarState extends State<SliverGradientAppBar>
   @override
   void didUpdateWidget(SliverGradientAppBar oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.snap != oldWidget.snap || widget.floating != oldWidget.floating) {
+    if (widget.snap != oldWidget.snap ||
+        widget.floating != oldWidget.floating) {
       _updateSnapConfiguration();
     }
   }
@@ -1192,8 +1192,9 @@ class _SliverGradientAppBarState extends State<SliverGradientAppBar>
   @override
   Widget build(BuildContext context) {
     assert(!widget.primary || debugCheckHasMediaQuery(context));
-    final double topPadding =
-        widget.primary ? MediaQuery.of(context).padding.top : 0.0;
+    final double topPadding = widget.primary
+        ? MediaQuery.of(context).padding.top
+        : 0.0;
     final double collapsedHeight = ((widget.pinned && widget.floating)
         ? widget.bottom!.preferredSize.height + topPadding
         : null)!;
