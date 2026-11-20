@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_gradient_app_bar/flutter_gradient_app_bar.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:flutter_gradient_app_bar_plus/flutter_gradient_app_bar_plus.dart';
 
 void main() => runApp(MyApp());
 
@@ -7,11 +7,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'GradientAppBar Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(title: 'GradientAppBar Home Page'),
     );
   }
 }
@@ -40,6 +40,7 @@ class _MyHomePageState extends State<MyHomePage> {
       length: 2,
       child: Scaffold(
         appBar: GradientAppBar(
+          borderRadius: .circular(24),
           title: Text(widget.title),
           gradient: LinearGradient(colors: [Colors.red, Colors.purple]),
           bottom: TabBar(tabs: <Widget>[
@@ -55,7 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         body: Center(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: .center,
             children: <Widget>[
               Text(
                 'You have pushed the button this many times:',

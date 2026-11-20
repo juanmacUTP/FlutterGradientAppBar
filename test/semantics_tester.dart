@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// ignore_for_file: dead_code
+
 // import 'dart:ui' show SemanticsFlag;
 
 import 'package:flutter/foundation.dart';
@@ -439,13 +441,13 @@ class SemanticsTester {
         for (final flag in flags) {
           switch (flag) {
             case SemanticsFlag.isButton:
-              if (!semantics.isButton) return false;
+              if (semantics.isButton != true) return false;
               break;
             case SemanticsFlag.isHidden:
-              if (!semantics.isHidden) return false;
+              if (semantics.isHidden != true) return false;
               break;
             case SemanticsFlag.isEnabled:
-              if (!semantics.isEnabled) return false;
+              if (semantics.isEnabled != true) return false;
               break;
             default:
               break;

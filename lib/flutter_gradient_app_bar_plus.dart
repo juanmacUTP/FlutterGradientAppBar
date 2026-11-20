@@ -1,13 +1,23 @@
-library flutter_gradient_app_bar;
+library flutter_gradient_app_bar_plus;
 
 import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 
 const double _kLeadingWidth = kToolbarHeight;
+
+class _PreferredSizeZero extends StatelessWidget implements PreferredSizeWidget {
+  const _PreferredSizeZero({Key? key}) : super(key: key);
+
+  @override
+  Size get preferredSize => Size.zero;
+
+  @override
+  Widget build(BuildContext context) => const SizedBox.shrink();
+}
 
 // Bottom justify the kToolbarHeight child which may overflow the top.
 class _ToolbarContainerLayout extends SingleChildLayoutDelegate {
@@ -164,6 +174,7 @@ class GradientAppBar extends StatefulWidget implements PreferredSizeWidget {
     this.bottom,
     this.elevation,
     this.shape,
+    this.borderRadius,
     this.gradient,
     this.brightness,
     this.iconTheme,
@@ -277,6 +288,9 @@ class GradientAppBar extends StatefulWidget implements PreferredSizeWidget {
   /// A shadow is only displayed if the [elevation] is greater than
   /// zero.
   final ShapeBorder? shape;
+
+  /// The border radius of the app bar's material and decoration.
+  final BorderRadius? borderRadius;
 
   /// The color to use for the app bar's material. Typically this should be set
   /// along with [brightness], [iconTheme], [textTheme].
@@ -399,11 +413,11 @@ class _GradientAppBarState extends State<GradientAppBar> {
     assert(debugCheckHasMaterialLocalizations(context));
     final ThemeData themeData = Theme.of(context);
     final AppBarThemeData appBarTheme = AppBarTheme.of(context);
-    final ScaffoldState scaffold = Scaffold.of(context);
+    final ScaffoldState? scaffold = Scaffold.maybeOf(context);
     final ModalRoute<dynamic>? parentRoute = ModalRoute.of(context);
 
-    final bool hasDrawer = scaffold.hasDrawer;
-    final bool hasEndDrawer = scaffold.hasEndDrawer;
+    final bool hasDrawer = scaffold?.hasDrawer ?? false;
+    final bool hasEndDrawer = scaffold?.hasEndDrawer ?? false;
     final bool canPop = parentRoute?.canPop ?? false;
     final bool useCloseButton =
         parentRoute is PageRoute<dynamic> && parentRoute.fullscreenDialog;
@@ -582,9 +596,13 @@ class _GradientAppBarState extends State<GradientAppBar> {
           color: appBarTheme.backgroundColor ?? themeData.primaryColor,
           elevation:
               widget.elevation ?? appBarTheme.elevation ?? _defaultElevation,
-          shape: widget.shape,
+          shape: widget.shape ?? (widget.borderRadius != null ? RoundedRectangleBorder(borderRadius: widget.borderRadius!) : null),
+          clipBehavior: widget.borderRadius != null || widget.shape != null ? Clip.antiAlias : Clip.none,
           child: Container(
-            decoration: BoxDecoration(gradient: widget.gradient),
+            decoration: BoxDecoration(
+              gradient: widget.gradient,
+              borderRadius: widget.borderRadius,
+            ),
             child: Semantics(explicitChildNodes: true, child: appBar),
           ),
         ),
@@ -672,31 +690,33 @@ class _SliverGradientAppBarDelegate extends SliverPersistentHeaderDelegate {
     required this.pinned,
     required this.snapConfiguration,
     required this.shape,
+    required this.borderRadius,
   }) : assert(primary || topPadding == 0.0),
        _bottomHeight = bottom.preferredSize.height;
 
-  final Widget leading;
+  final Widget? leading;
   final bool automaticallyImplyLeading;
-  final Widget title;
-  final List<Widget> actions;
-  final Widget flexibleSpace;
+  final Widget? title;
+  final List<Widget>? actions;
+  final Widget? flexibleSpace;
   final PreferredSizeWidget bottom;
-  final double elevation;
+  final double? elevation;
   final bool forceElevated;
-  final Gradient gradient;
-  final Brightness brightness;
-  final IconThemeData iconTheme;
-  final IconThemeData actionsIconTheme;
-  final TextTheme textTheme;
+  final Gradient? gradient;
+  final Brightness? brightness;
+  final IconThemeData? iconTheme;
+  final IconThemeData? actionsIconTheme;
+  final TextTheme? textTheme;
   final bool primary;
-  final bool centerTitle;
+  final bool? centerTitle;
   final double titleSpacing;
   final double expandedHeight;
   final double collapsedHeight;
   final double topPadding;
   final bool floating;
   final bool pinned;
-  final ShapeBorder shape;
+  final ShapeBorder? shape;
+  final BorderRadius? borderRadius;
 
   final double _bottomHeight;
 
@@ -746,12 +766,12 @@ class _SliverGradientAppBarDelegate extends SliverPersistentHeaderDelegate {
         flexibleSpace: (title == null && flexibleSpace != null)
             ? Semantics(child: flexibleSpace, header: true)
             : flexibleSpace,
-        bottom: bottom,
+        bottom: bottom is _PreferredSizeZero ? null : bottom,
         elevation:
             forceElevated ||
                 overlapsContent ||
                 (pinned && shrinkOffset > maxExtent - minExtent)
-            ? elevation
+            ? (elevation ?? 4.0)
             : 0.0,
         gradient: gradient,
         brightness: brightness,
@@ -762,6 +782,7 @@ class _SliverGradientAppBarDelegate extends SliverPersistentHeaderDelegate {
         centerTitle: centerTitle,
         titleSpacing: titleSpacing,
         shape: shape,
+        borderRadius: borderRadius,
         toolbarOpacity: toolbarOpacity,
         bottomOpacity: pinned
             ? 1.0
@@ -793,6 +814,8 @@ class _SliverGradientAppBarDelegate extends SliverPersistentHeaderDelegate {
         topPadding != oldDelegate.topPadding ||
         pinned != oldDelegate.pinned ||
         floating != oldDelegate.floating ||
+        shape != oldDelegate.shape ||
+        borderRadius != oldDelegate.borderRadius ||
         snapConfiguration != oldDelegate.snapConfiguration;
   }
 
@@ -908,6 +931,7 @@ class SliverGradientAppBar extends StatefulWidget {
     this.pinned = false,
     this.snap = false,
     this.shape,
+    this.borderRadius,
   }) : assert(
          floating || !snap,
          'The "snap" argument only makes sense for floating app bars.',
@@ -1126,6 +1150,9 @@ class SliverGradientAppBar extends StatefulWidget {
   /// zero.
   final ShapeBorder? shape;
 
+  /// The border radius of the app bar's material and decoration.
+  final BorderRadius? borderRadius;
+
   /// If [snap] and [floating] are true then the floating app bar will "snap"
   /// into view.
   ///
@@ -1195,9 +1222,12 @@ class _SliverGradientAppBarState extends State<SliverGradientAppBar>
     final double topPadding = widget.primary
         ? MediaQuery.of(context).padding.top
         : 0.0;
-    final double collapsedHeight = ((widget.pinned && widget.floating)
-        ? widget.bottom!.preferredSize.height + topPadding
-        : null)!;
+    final PreferredSizeWidget effectiveBottom = widget.bottom ?? const _PreferredSizeZero();
+    final double bottomHeight = effectiveBottom.preferredSize.height;
+    final double collapsedHeight = (widget.pinned && widget.floating)
+        ? bottomHeight + topPadding
+        : bottomHeight + kToolbarHeight + topPadding;
+    final double expandedHeight = widget.expandedHeight ?? (kToolbarHeight + bottomHeight);
 
     return MediaQuery.removePadding(
       context: context,
@@ -1206,29 +1236,30 @@ class _SliverGradientAppBarState extends State<SliverGradientAppBar>
         floating: widget.floating,
         pinned: widget.pinned,
         delegate: _SliverGradientAppBarDelegate(
-          leading: (widget.leading)!,
+          leading: widget.leading,
           automaticallyImplyLeading: widget.automaticallyImplyLeading,
-          title: widget.title!,
-          actions: widget.actions!,
-          flexibleSpace: widget.flexibleSpace!,
-          bottom: widget.bottom!,
-          elevation: widget.elevation!,
+          title: widget.title,
+          actions: widget.actions,
+          flexibleSpace: widget.flexibleSpace,
+          bottom: effectiveBottom,
+          elevation: widget.elevation,
           forceElevated: widget.forceElevated,
-          gradient: widget.gradient!,
-          brightness: widget.brightness!,
-          iconTheme: widget.iconTheme!,
-          actionsIconTheme: widget.actionsIconTheme!,
-          textTheme: widget.textTheme!,
+          gradient: widget.gradient,
+          brightness: widget.brightness,
+          iconTheme: widget.iconTheme,
+          actionsIconTheme: widget.actionsIconTheme,
+          textTheme: widget.textTheme,
           primary: widget.primary,
-          centerTitle: widget.centerTitle!,
+          centerTitle: widget.centerTitle,
           titleSpacing: widget.titleSpacing,
-          expandedHeight: widget.expandedHeight!,
+          expandedHeight: expandedHeight,
           collapsedHeight: collapsedHeight,
           topPadding: topPadding,
           floating: widget.floating,
           pinned: widget.pinned,
-          shape: widget.shape!,
-          snapConfiguration: (_snapConfiguration)!,
+          shape: widget.shape,
+          borderRadius: widget.borderRadius,
+          snapConfiguration: _snapConfiguration ?? FloatingHeaderSnapConfiguration(curve: Curves.easeOut, duration: Duration.zero),
         ),
       ),
     );

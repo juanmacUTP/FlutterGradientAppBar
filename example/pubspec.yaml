@@ -11,14 +11,15 @@ description: A new Flutter project.
 version: 1.0.0+1
 
 environment:
-  sdk: '>=2.12.0 <3.0.0'
+  sdk: ^3.13.0
 
 dependencies:
-  flutter_gradient_app_bar:
-    path: ../../flGradientApb
-
   flutter:
     sdk: flutter
+  flutter_gradient_app_bar_plus:
+    path: ../
+  material_ui: ^1.11.1
+
 
 
 dev_dependencies:

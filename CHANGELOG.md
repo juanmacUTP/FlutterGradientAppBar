@@ -1,3 +1,9 @@
+## [0.5.0] - 29 August 2025
+- Migrate core package implementation to use standalone `material_ui` package instead of Flutter core Material
+- Add `borderRadius` support for `GradientAppBar` and `SliverGradientAppBar`
+- Fix example app imports and configuration
+- Improve null-safety handling in sliver persistent header delegate and test suite
+
 ## [0.4.5] - 29 August 2025
 - Refact file with Dart Format
 - 

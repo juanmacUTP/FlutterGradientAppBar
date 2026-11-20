@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -1679,5 +1679,64 @@ void main() {
     Material getMaterialWidget(Finder finder) =>
         tester.widget<Material>(finder);
     expect(getMaterialWidget(materialFinder).shape, roundedRectangleBorder);
+  });
+
+  testWidgets('GradientAppBar with borderRadius', (WidgetTester tester) async {
+    const BorderRadius borderRadius = BorderRadius.all(Radius.circular(20.0));
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          appBar: GradientAppBar(
+            leading: const Text('L'),
+            title: const Text('Title'),
+            borderRadius: borderRadius,
+          ),
+        ),
+      ),
+    );
+
+    final Finder appBarFinder = find.byType(GradientAppBar);
+    GradientAppBar getGradientAppBarWidget(Finder finder) =>
+        tester.widget<GradientAppBar>(finder);
+    expect(getGradientAppBarWidget(appBarFinder).borderRadius, borderRadius);
+
+    final Finder materialFinder = find.descendant(
+      of: appBarFinder,
+      matching: find.byType(Material),
+    );
+    Material getMaterialWidget(Finder finder) =>
+        tester.widget<Material>(finder);
+    expect(getMaterialWidget(materialFinder).shape, const RoundedRectangleBorder(borderRadius: borderRadius));
+  });
+
+  testWidgets('SliverGradientAppBar with borderRadius', (WidgetTester tester) async {
+    const BorderRadius borderRadius = BorderRadius.all(Radius.circular(20.0));
+    await tester.pumpWidget(
+      MaterialApp(
+        home: CustomScrollView(
+          slivers: <Widget>[
+            SliverGradientAppBar(
+              leading: const Text('L'),
+              title: const Text('Title'),
+              actions: const <Widget>[Text('A1')],
+              borderRadius: borderRadius,
+            ),
+          ],
+        ),
+      ),
+    );
+
+    final Finder sliverGradientAppBarFinder = find.byType(SliverGradientAppBar);
+    SliverGradientAppBar getSliverGradientAppBarWidget(Finder finder) =>
+        tester.widget<SliverGradientAppBar>(finder);
+    expect(getSliverGradientAppBarWidget(sliverGradientAppBarFinder).borderRadius, borderRadius);
+
+    final Finder materialFinder = find.descendant(
+      of: sliverGradientAppBarFinder,
+      matching: find.byType(Material),
+    );
+    Material getMaterialWidget(Finder finder) =>
+        tester.widget<Material>(finder);
+    expect(getMaterialWidget(materialFinder).shape, const RoundedRectangleBorder(borderRadius: borderRadius));
   });
 }
